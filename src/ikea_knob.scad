@@ -16,7 +16,7 @@
 $fn = 30;
 
 TOLERANCES = 0.1;
-RELEASE_MODE = false;
+RELEASE_MODE = true;
 
 //------------------------------------------------
 // data
@@ -25,10 +25,10 @@ KNOB_INNER_RADIUS = 15.25;
 KNOB_HEIGHT = 25.5;
 KNOB_INNER_HEIGHT = 22.5;
 
-JOINT_INNER_RADIUS = 3.15;
+JOINT_INNER_RADIUS = 3.05;
 JOINT_HEIGHT = 14;
 
-JOINT_DISTANCE = 2.4;
+JOINT_DISTANCE = 2.1;
 VINCULUM_THICKNESS = 2;
 
 // test mode sizes
