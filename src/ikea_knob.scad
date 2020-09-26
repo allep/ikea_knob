@@ -13,7 +13,7 @@
 //------------------------------------------------
 
 // Set face number to a sufficiently high number.
-$fn = 40;
+$fn = 80;
 
 TOLERANCES = 0.1;
 RELEASE_MODE = true;
@@ -35,7 +35,7 @@ VINCULUM_THICKNESS = 2;
 // Text
 TEXT = "3 2 1 0";
 TEXT_DEPTH = OUTER_WALL / 2;
-TEXT_HEIGHT = 7.5;
+TEXT_HEIGHT = 7;
 TEXT_POSITION_Z_OFFSET = KNOB_HEIGHT / 4;
 
 //------------------------------------------------
@@ -56,7 +56,7 @@ module labels(letter_size) {
     union () {
         for (i = [0 : 1 : slices]) {
            
-            rotate ([0, 0, i * (360 / slices)]) translate ([0, - KNOB_INNER_RADIUS - OUTER_WALL + TEXT_DEPTH -0.5, 0])
+            rotate ([0, 0, i * (360 / slices)]) translate ([0, - KNOB_INNER_RADIUS - OUTER_WALL, 0])
             intersection () {
                
                 translate ([-slice_width / 2 - (i * slice_width) , 0, 0]) rotate ([90, 0, 0])
@@ -116,5 +116,6 @@ else {
         translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
         hole();
     }
-
+    
+    labels(10);
 }
