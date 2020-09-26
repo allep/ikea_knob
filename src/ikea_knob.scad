@@ -13,7 +13,7 @@
 //------------------------------------------------
 
 // Set face number to a sufficiently high number.
-$fn = 30;
+$fn = 40;
 
 TOLERANCES = 0.1;
 RELEASE_MODE = true;
@@ -32,13 +32,42 @@ JOINT_PEG_HEIGHT = 7.3;
 JOINT_DISTANCE = 2.1;
 VINCULUM_THICKNESS = 2;
 
-// test mode sizes
-KNOB_HEIGHT_SMALL_TEST = JOINT_HEIGHT;
-KNOB_INNER_HEIGHT_SMALL_TEST = JOINT_HEIGHT;
-KNOB_INNER_RADIUS_SMALL_TEST = JOINT_INNER_RADIUS + 2*OUTER_WALL;
+// Text
+TEXT = "3 2 1 0";
+TEXT_DEPTH = OUTER_WALL / 2;
+TEXT_HEIGHT = 7.5;
+TEXT_POSITION_Z_OFFSET = KNOB_HEIGHT / 4;
 
 //------------------------------------------------
-// actual script
+// Circular text computations
+// Reference:
+// http://forum.openscad.org/It-seems-no-way-to-put-text-on-the-curved-surface-td20182.html
+
+// slices: text should be mapped on 45 degrees only
+slices = 20;
+circumference = 2* 3.14159 * KNOB_INNER_RADIUS;
+slice_width = circumference / slices;
+
+//------------------------------------------------
+// Modules
+
+// labels
+module labels(letter_size) {
+    union () {
+        for (i = [0 : 1 : slices]) {
+           
+            rotate ([0, 0, i * (360 / slices)]) translate ([0, - KNOB_INNER_RADIUS - OUTER_WALL + TEXT_DEPTH -0.5, 0])
+            intersection () {
+               
+                translate ([-slice_width / 2 - (i * slice_width) , 0, 0]) rotate ([90, 0, 0])
+                linear_extrude(TEXT_DEPTH, center = true, convexity = 10)
+                text(TEXT, size = letter_size);
+               
+                cube ([slice_width + 1.2, TEXT_DEPTH + 1, KNOB_HEIGHT], true);
+            }
+        }
+    }
+}
 
 // hole
 module hole() {
@@ -54,6 +83,10 @@ module hole() {
 module peg(height) {
     cylinder(h = height, r = JOINT_INNER_RADIUS + OUTER_WALL);
 }
+
+
+//------------------------------------------------
+// Actual script
 
 if (RELEASE_MODE == true) {
     difference() {
@@ -71,6 +104,9 @@ if (RELEASE_MODE == true) {
         }
         translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
         hole();
+        
+        translate([0, 0, TEXT_POSITION_Z_OFFSET])
+        labels(TEXT_HEIGHT);
     }
 }
 else {
