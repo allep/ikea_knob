@@ -27,6 +27,7 @@ KNOB_INNER_HEIGHT = 22.5;
 
 JOINT_INNER_RADIUS = 3.05;
 JOINT_HEIGHT = 14;
+JOINT_PEG_HEIGHT = 7.3;
 
 JOINT_DISTANCE = 2.1;
 VINCULUM_THICKNESS = 2;
@@ -39,32 +40,45 @@ KNOB_INNER_RADIUS_SMALL_TEST = JOINT_INNER_RADIUS + 2*OUTER_WALL;
 //------------------------------------------------
 // actual script
 
-if (RELEASE_MODE == true) {
-    union() {
-        difference() {
-            cylinder(h = KNOB_HEIGHT, r = KNOB_INNER_RADIUS + OUTER_WALL);
-            translate([0, 0, JOINT_HEIGHT + KNOB_HEIGHT - KNOB_INNER_HEIGHT])
-            cylinder(h = KNOB_INNER_HEIGHT - JOINT_HEIGHT, r = KNOB_INNER_RADIUS);
-            translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
-            cylinder(h = JOINT_HEIGHT, r = JOINT_INNER_RADIUS);
-        }
-
-        // now sum the vinculum
-        translate([-JOINT_INNER_RADIUS, JOINT_DISTANCE, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
+// hole
+module hole() {
+    rotate([0, 0, 180])
+    difference() {
+        cylinder(h = JOINT_HEIGHT, r = JOINT_INNER_RADIUS);
+        translate([-JOINT_INNER_RADIUS, JOINT_DISTANCE, 0])
         cube([2*JOINT_INNER_RADIUS, VINCULUM_THICKNESS, JOINT_HEIGHT]);
+    }
+}
+
+// peg
+module peg(height) {
+    cylinder(h = height, r = JOINT_INNER_RADIUS + OUTER_WALL);
+}
+
+if (RELEASE_MODE == true) {
+    difference() {
+        union() {
+            difference() {
+                cylinder(h = KNOB_HEIGHT, r = KNOB_INNER_RADIUS + OUTER_WALL);
+                translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT + JOINT_HEIGHT - JOINT_PEG_HEIGHT])
+                cylinder(h = KNOB_INNER_HEIGHT - JOINT_HEIGHT + JOINT_PEG_HEIGHT, r = KNOB_INNER_RADIUS);
+            }
+            
+            // the peg
+            translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
+            peg(JOINT_HEIGHT);
+            
+        }
+        translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
+        hole();
     }
 }
 else {
     // small scale 3d printing tests
-    union() {
-        difference() {
-            cylinder(h = KNOB_HEIGHT - KNOB_INNER_HEIGHT + JOINT_HEIGHT, r = JOINT_INNER_RADIUS + OUTER_WALL);
-            translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
-            cylinder(h = JOINT_HEIGHT, r = JOINT_INNER_RADIUS);
-        }
-
-        // now sum the vinculum
-        translate([-JOINT_INNER_RADIUS, JOINT_DISTANCE, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
-        cube([2*JOINT_INNER_RADIUS, VINCULUM_THICKNESS, JOINT_HEIGHT]);
+    difference() {
+        peg(KNOB_HEIGHT - KNOB_INNER_HEIGHT + JOINT_HEIGHT);
+        translate([0, 0, KNOB_HEIGHT - KNOB_INNER_HEIGHT])
+        hole();
     }
+
 }
